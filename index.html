@@ -4,13 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - DistribusiKu</title>
-    
-    <!-- Alpine.js untuk logika tampilan -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
-    <!-- Supabase JS untuk koneksi database -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- Sedikit sentuhan desain agar tampil rapi dan profesional -->
     <style>
         body { font-family: sans-serif; background-color: #f3f4f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .kotak-login { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
@@ -23,13 +18,10 @@
     </style>
 </head>
 <body>
-
-    <!-- Area yang dikendalikan oleh Alpine.js -->
     <div class="kotak-login" x-data="logikaLogin()">
         <h2 style="text-align: center; margin-top: 0; color: #1e3a8a;">DistribusiKu</h2>
         <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 20px;">Silakan masuk ke akun Anda</p>
         
-        <!-- Formulir Login -->
         <form @submit.prevent="prosesLogin">
             <div class="grup-input">
                 <label>Email</label>
@@ -40,15 +32,12 @@
                 <input type="password" x-model="password" required placeholder="Kata sandi...">
             </div>
             
-            <!-- Tombol akan berubah teksnya saat sedang memproses -->
             <button type="submit" x-text="sedangMemuat ? 'Memproses...' : 'Masuk'" :disabled="sedangMemuat"></button>
             
-            <!-- Tempat menampilkan pesan error jika password salah -->
             <div class="error" x-show="pesanError" x-text="pesanError"></div>
         </form>
     </div>
 
-    <!-- Logika Program -->
     <script>
         function logikaLogin() {
             return {
@@ -61,31 +50,31 @@
                     this.sedangMemuat = true;
                     this.pesanError = '';
                     
-                    // ==========================================
-                    // PERHATIAN: GANTI TEKS DI BAWAH INI
-                    // ==========================================
-                    const URL_SUPABASE = 'URL_SUPABASE_BAPAK_DI_SINI';
-                    const ANON_KEY = 'ANON_KEY_BAPAK_DI_SINI';
-                    // ==========================================
-                    
-                    // Membuka koneksi ke brankas
-                    const supabaseClient = supabase.createClient(URL_SUPABASE, ANON_KEY);
-                    
-                    // Meminta Supabase memeriksa email dan password
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({
-                        email: this.email,
-                        password: this.password,
-                    });
-                    
-                    if (error) {
-                        // Jika salah password / email
-                        this.pesanError = 'Login gagal. Periksa kembali email dan password Anda.';
+                    try {
+                        // ==========================================
+                        // PERHATIAN: MASUKKAN KUNCI BAPAK DI SINI
+                        // ==========================================
+                        const URL_SUPABASE = 'URL_SUPABASE_BAPAK_DI_SINI';
+                        const ANON_KEY = 'ANON_KEY_BAPAK_DI_SINI';
+                        // ==========================================
+                        
+                        const supabaseClient = supabase.createClient(URL_SUPABASE, ANON_KEY);
+                        
+                        const { data, error } = await supabaseClient.auth.signInWithPassword({
+                            email: this.email,
+                            password: this.password,
+                        });
+                        
+                        if (error) {
+                            this.pesanError = 'Login gagal. Periksa kembali email dan password Anda.';
+                            this.sedangMemuat = false;
+                        } else {
+                            // Jika berhasil, langsung pindah ke dashboard
+                            window.location.href = 'dashboard.html';
+                        }
+                    } catch (err) {
+                        this.pesanError = 'Terjadi kesalahan sistem atau kunci tidak valid.';
                         this.sedangMemuat = false;
-                    } else {
-                        // Jika berhasil
-                        alert('Login Berhasil! Selamat datang, Owner.');
-                        this.sedangMemuat = false;
-                        // Nanti kita akan tambahkan kode untuk pindah ke halaman Dashboard
                     }
                 }
             }
