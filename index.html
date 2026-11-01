@@ -3,18 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mydist - Login</title>
+    <title>Login - DistribusiKu</title>
     
-    <!-- Memanggil Alpine.js (Framework ringan kita) dari internet -->
+    <!-- Alpine.js untuk logika tampilan -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
-    
-    <!-- Memanggil Supabase dari internet -->
+    <!-- Supabase JS untuk koneksi database -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Sedikit sentuhan desain agar tampil rapi dan profesional -->
+    <style>
+        body { font-family: sans-serif; background-color: #f3f4f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .kotak-login { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
+        .grup-input { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #2563eb; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        button:disabled { background-color: #93c5fd; }
+        .error { color: #dc2626; font-size: 14px; margin-top: 10px; text-align: center; }
+    </style>
 </head>
 <body>
-    <div x-data="{ pesan: 'Sistem Mydist berhasil dimuat di Xiaomi Pad 8!' }" style="text-align: center; margin-top: 50px; font-family: sans-serif;">
-        <h1 x-text="pesan">Teks ini akan berubah jika Alpine.js berhasil berjalan.</h1>
-        <p>Tahap 1: Pengujian File Frontend Pertama.</p>
+
+    <!-- Area yang dikendalikan oleh Alpine.js -->
+    <div class="kotak-login" x-data="logikaLogin()">
+        <h2 style="text-align: center; margin-top: 0; color: #1e3a8a;">DistribusiKu</h2>
+        <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 20px;">Silakan masuk ke akun Anda</p>
+        
+        <!-- Formulir Login -->
+        <form @submit.prevent="prosesLogin">
+            <div class="grup-input">
+                <label>Email</label>
+                <input type="email" x-model="email" required placeholder="Email karyawan...">
+            </div>
+            <div class="grup-input">
+                <label>Password</label>
+                <input type="password" x-model="password" required placeholder="Kata sandi...">
+            </div>
+            
+            <!-- Tombol akan berubah teksnya saat sedang memproses -->
+            <button type="submit" x-text="sedangMemuat ? 'Memproses...' : 'Masuk'" :disabled="sedangMemuat"></button>
+            
+            <!-- Tempat menampilkan pesan error jika password salah -->
+            <div class="error" x-show="pesanError" x-text="pesanError"></div>
+        </form>
     </div>
+
+    <!-- Logika Program -->
+    <script>
+        function logikaLogin() {
+            return {
+                email: '',
+                password: '',
+                sedangMemuat: false,
+                pesanError: '',
+                
+                async prosesLogin() {
+                    this.sedangMemuat = true;
+                    this.pesanError = '';
+                    
+                    // ==========================================
+                    // PERHATIAN: GANTI TEKS DI BAWAH INI
+                    // ==========================================
+                    const URL_SUPABASE = 'URL_SUPABASE_BAPAK_DI_SINI';
+                    const ANON_KEY = 'ANON_KEY_BAPAK_DI_SINI';
+                    // ==========================================
+                    
+                    // Membuka koneksi ke brankas
+                    const supabaseClient = supabase.createClient(URL_SUPABASE, ANON_KEY);
+                    
+                    // Meminta Supabase memeriksa email dan password
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: this.email,
+                        password: this.password,
+                    });
+                    
+                    if (error) {
+                        // Jika salah password / email
+                        this.pesanError = 'Login gagal. Periksa kembali email dan password Anda.';
+                        this.sedangMemuat = false;
+                    } else {
+                        // Jika berhasil
+                        alert('Login Berhasil! Selamat datang, Owner.');
+                        this.sedangMemuat = false;
+                        // Nanti kita akan tambahkan kode untuk pindah ke halaman Dashboard
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 </html>
