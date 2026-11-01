@@ -65,7 +65,7 @@
                         });
                         
                         if (error) {
-                            this.pesanError = 'Login gagal. Periksa kembali email dan password Anda.';
+                            this.pesanError = 'Sistem menjawab: ' + error.message;
                             this.sedangMemuat = false;
                         } else {
                             // Jika berhasil, langsung pindah ke dashboard
